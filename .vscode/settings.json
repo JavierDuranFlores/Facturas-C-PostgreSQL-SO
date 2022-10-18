@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "conexion.h": "c",
+        "libpq-fe.h": "c",
+        "detalle_facturas.h": "c",
+        "factura.h": "c",
+        "cliente.h": "c",
+        "cliente_service.h": "c",
+        "agregar.h": "c",
+        "next_line.h": "c",
+        "articulo.h": "c",
+        "articulo_service.h": "c",
+        "factura_service.h": "c",
+        "detalle_factura_service.h": "c",
+        "lista_articulo.h": "c",
+        "leer.h": "c",
+        "concat_punteros.h": "c",
+        "eliminar.h": "c"
+    }
+}
