@@ -15,6 +15,13 @@
         "lista_articulo.h": "c",
         "leer.h": "c",
         "concat_punteros.h": "c",
-        "eliminar.h": "c"
+        "eliminar.h": "c",
+        "cliente_telefonos.h": "c",
+        "fcntl.h": "c",
+        "stat.h": "c",
+        "types.h": "c",
+        "unistd.h": "c",
+        "stdlib.h": "c",
+        "lista.h": "c"
     }
 }

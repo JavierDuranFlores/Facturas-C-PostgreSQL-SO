@@ -1,6 +1,44 @@
 #include "../../include/service/factura_service.h"
 
-Factura * recolectar_datos_factura(){
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int fd2;
+char * myfifo2 = "/tmp/myfifo2";  
+static PGconn * conexion;
+char * tabla = " ";
+
+int main () {
+    
+    
+    mkfifo(myfifo2, 0666);
+
+    // Creating the named file(FIFO)
+    // mkfifo(<pathname>,<permission>)
+    while (1) {
+
+     
+        // First open in read only and read
+        fd2 = open(myfifo2,O_RDONLY);
+        char sql[1024];
+        read(fd2, sql,sizeof(sql));
+        printf("%s\n", sql);
+        if (strcmp(sql, "mostrar_facturas")==0) {   
+            tabla = leer_todos_enviar(conexion_db(), sql, 'f');
+        } 
+        
+        close(fd2);
+        fd2 = open(myfifo2,O_WRONLY);
+        write(fd2, tabla, strlen(tabla)+1);
+        close(fd2);
+
+    }
+
+}
+
+/*Factura * recolectar_datos_factura(){
 
     vacia_buffer();
 
@@ -120,5 +158,25 @@ ExecStatusType agregar_detalle_factura(PGconn * conn, char * name_func_postgres,
 	printf("\n%s\n", sql);
 
     return PQresultStatus(res);
+
+}*/
+
+
+PGconn * conexion_db() {
+
+    if (conexion == NULL) {
+        conexion = PQconnectdb("host=127.0.0.1 port=5432 dbname=market user=postgres password=1234");
+    }
+
+    comprobar_estadodb();
+
+    return conexion;
+}
+
+void comprobar_estadodb() {
+
+    if (PQstatus (conexion) == CONNECTION_BAD) {
+        fprintf (stderr, "Falló la conexión a la base de datos:%s \n", PQerrorMessage (conexion));
+    }
 
 }

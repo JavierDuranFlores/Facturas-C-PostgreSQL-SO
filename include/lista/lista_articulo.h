@@ -13,7 +13,7 @@ typedef struct Lista_Articulo {
 
 }Lista_Articulo;
 
-Lista_Articulo * primero, * ultimo;
+//Lista_Articulo * primero, * ultimo;
 
 Lista_Articulo * crear_articulo();
 void agregar_articulo();

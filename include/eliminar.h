@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <libpq-fe.h>
 #include <stdarg.h>
-#include "../../include/concat_punteros.h"
+#include "../include/concat_punteros.h"
 
 void eliminar_todos(PGconn * conn, char * name_func_postgres, int cantidad, ...);
 

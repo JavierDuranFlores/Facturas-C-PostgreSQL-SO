@@ -26,7 +26,7 @@ char * nextLine(void) {
   return _c; /* finalmente, devuelvela. */
 }
 
-void vacia_buffer() {
+void  vacia_buffer() {
   int ch;
   while ((ch = getchar()) != '\n' && ch != EOF);
 }
