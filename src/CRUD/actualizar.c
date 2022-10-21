@@ -1,6 +1,6 @@
 #include "../../include/atualizar.h"
 
-void actualizar_todos(PGconn * conn, char * name_func_postgres, int cantidad, ...) {
+void actualizar_todos(/*PGconn * conn, */char * name_func_postgres, int cantidad, ...) {
     va_list lista_argumentos;
 	va_start (lista_argumentos, cantidad);
 	char * p_concatenado = " ";

@@ -3,10 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <libpq-fe.h>
+//#include <libpq-fe.h>
 #include <stdarg.h>
 
-void agregar_todos(PGconn * conn, char * name_func_postgres, int cantidad, ...);
+char * agregar_todos(/*PGconn * conn, */char * name_func_postgres, int cantidad, ...);
 
 
 #endif

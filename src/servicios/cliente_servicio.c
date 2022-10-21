@@ -5,39 +5,126 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int fd1;
-char * myfifo = "/tmp/myfifo";  
+int fdMain, fdAgregar;
+char txt[5];
+char *myfifo = "/tmp/myfifo";
 int fifoCliente;
 int fifoServiceCliente;
 // FIFO file path
-static PGconn * conexion;
-char * tabla = " ";
+static PGconn *conn;
+char *tabla = " ";
+ char txt2[5];
+ //int i,j,fd1,fd2;
+ int fdWR, fdRD;
 
-int main () {
-    
-    
-    mkfifo(myfifo, 0666);
 
-    // Creating the named file(FIFO)
-    // mkfifo(<pathname>,<permission>)
-    while (1) {
 
-     
-        // First open in read only and read
-        fd1 = open(myfifo,O_RDONLY);
-        char sql[1024];
-        read(fd1, sql,sizeof(sql));
-        if (strcmp(sql, "mostrar_clientes")==0);
-        {
-            tabla = leer_todos_enviar(conexion_db(), "mostrar_clientes", 'f');
-        } 
-        close(fd1);
+int main()
+{
+    conn = conexion_db();   
+    mkfifo("consulta",0666);	
+    mkfifo("menuInicio",0666); 
+    int opcion = 0;
+   
+    while (1)
+    {
         
-        fd1 = open(myfifo,O_WRONLY);
-        write(fd1, tabla, strlen(tabla)+1);
-        close(fd1);
+        fdWR= open("menuInicio",O_RDONLY);
+        read(fdWR, txt, sizeof(txt));
+        opcion = atoi(txt);
+        close(fdWR);
 
+        printf("\n|-----------------------------|");
+        printf("\n|            * Menu *         |");
+        printf("\n|-----------------------------|");
+        printf("\n| 1. Agregar    | 3. Leer     |");
+        printf("\n| 2. Actualizar | 4. Eliminar |");
+	printf("\n|	      5. Salir        |");
+        printf("\n|---------------|-------------|");
+        printf("->%i\n", opcion);
+
+        switch (opcion)     
+        {
+
+        case 1:
+            menu_agregar();
+            printf("\n");
+            break;
+        case 2:
+            // menu_actualizar();
+            printf("\n");
+            break;
+        case 3:
+            //menu_leer();
+            break;
+        case 4:
+            // menu_eliminar();
+            printf("\n");
+            break;
+        case 5:
+            main();
+            break;
+        default:
+            printf("\nOpcion no disponible\n");
+        }
     }
+
+    // First open in read only and read
+    /*fd1 = open(myfifo,O_RDONLY);
+    char funcion[1024];
+    char sql[1024];
+    read(fd1, sql,sizeof(sql));
+    if (strcmp(sql, "mostrar_clientes")==0)
+        tabla = leer_todos_enviar(conexion_db(), "mostrar_clientes", 'f');
+    else {
+        PQexec(conexion_db(), sql);
+        tabla="Cliente exitosamente ingresado";
+    }
+    printf("hj: %s\n", tabla);
+    close(fd1);
+
+    fd1 = open(myfifo,O_WRONLY);
+    write(fd1, tabla, strlen(tabla)+1);
+    close(fd1);*/
+}
+
+void menu_agregar() {
+    int opcion = 0; 
+    char instruccion[999] = " ";
+    PGresult * res;
+    mkfifo("menuAgregar",0666);
+    fdRD=open("menuAgregar",O_RDONLY);
+    read(fdRD,txt,sizeof(txt));
+
+        printf("\n|-----------------------------|");
+        printf("\n|            * Menu *         |");
+        printf("\n|-----------------------------|");
+        printf("\n| 1. Cliente    | 3. Factura  |");
+        printf("\n| 2. Articulo   | 4. Regresar |");
+        printf("\n|---------------|-------------|");
+        opcion=atoi(txt);
+        printf("-->%i\n",opcion);
+
+        switch(opcion) {
+            case 1:
+            fdRD=open("consulta",O_RDONLY);
+            read(fdRD,instruccion,sizeof(instruccion));
+            printf("Con: %s\n",instruccion);
+            PQexec(conn,instruccion);
+            break;
+            case 2:
+                //agregar_articulo_servicio(conn);
+            break;
+            case 3:
+                //facturar_servicio(conn);
+            break;
+            case 4:
+                //menu_admin();
+            break;
+            default:
+			    printf("\nOpcion no disponible\n");
+        }
+
 
 }
 
@@ -90,21 +177,33 @@ void eliminar_cliente_servicio(PGconn * conn) {
     eliminar_todos(conn, "eliminar_cliente ", 1, id);
 }*/
 
-PGconn * conexion_db() {
+PGconn *conexion_db()
+{
 
-    if (conexion == NULL) {
-        conexion = PQconnectdb("host=127.0.0.1 port=5432 dbname=market user=postgres password=1234");
+    if (conn == NULL)
+    {
+        conn = PQconnectdb("host=127.0.0.1 port=5432 dbname=market user=postgres password=12345");
     }
 
     comprobar_estadodb();
 
-    return conexion;
+    return conn;
 }
 
-void comprobar_estadodb() {
+void comprobar_estadodb()
+{
 
-    if (PQstatus (conexion) == CONNECTION_BAD) {
-        fprintf (stderr, "Falló la conexión a la base de datos:%s \n", PQerrorMessage (conexion));
+    if (PQstatus(conn) == CONNECTION_BAD)
+    {
+        fprintf(stderr, "Falló la conexión a la base de datos:%s \n", PQerrorMessage(conn));
     }
+}
+void do_exit_(PGconn *conn, PGresult *res) {
+    
+    fprintf(stderr, "%s\n", PQerrorMessage(conn));    
 
+    PQclear(res);
+    PQfinish(conn);    
+    
+    exit(1);
 }

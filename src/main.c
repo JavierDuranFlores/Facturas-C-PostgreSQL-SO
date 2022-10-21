@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 //#include "../include/conexion.h"
-/* #include "../include/leer.h"
+/* #include "../include/leer.h"*/
 #include "../include/agregar.h"
 #include "../include/cliente.h"
-#include "../include/cliente_telefonos.h"
+//#include "../include/actualizar.h"
+/*#include "../include/cliente_telefonos.h"
 #include "../include/articulo.h"
 #include "../include/factura.h"
 #include "../include/detalle_facturas.h"
@@ -13,6 +14,8 @@
 #include "../include/service/factura_service.h"
 #include "../include/service/detalle_factura_service.h"*/
 #include "../include/next_line.h"
+#include "../include/concat_punteros.h"
+
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -27,8 +30,8 @@ PGconn * conexion_db();*/
 void comprobar_estadodb();
 
 /* MENUS */
-void menu_admin();
-//void menu_agregar();
+//void menu_admin();
+void menu_agregar();
 void menu_leer();
 /*void menu_actualizar();
 void menu_actualizar_cliente();
@@ -38,17 +41,21 @@ void menu_eliminar();
 void mostrar_datos_factura();*/
 
 void mostrar_tabla(char * tabla) ;
-void servidor_leer_cliente(char * sql) ;
+void servidor_cliente(char * sql) ;
 void servidor_leer_factura(char * sql) ;
 void servidor_leer_articulo(char * sql);
 void servidor_leer_detalle_factura(char * sql);
+Cliente * recolectar_datos_cliente();
 
-int fd, fd1, fd2, fd3;
+/*int fd, fd1, fd2, fd3, fd4;
 // FIFO file path
 char * myfifo = "/tmp/myfifo"; //cliente -> (CRUD)
 char * myfifo2 = "/tmp/myfifo2";
 char * myfifo3 = "/tmp/myfifo3";
 char * myfifo4 = "/tmp/myfifo4";
+char * menu = "/tmp/menu";*/
+
+int fdWR, fdRD;
 
 char tabla[1024];
 
@@ -58,37 +65,61 @@ int main() {
 
     // Creating the named file(FIFO)
     // mkfifo(<pathname>, <permission>)
-    mkfifo(myfifo, 0666);
+    /*mkfifo(myfifo, 0666);
     mkfifo(myfifo2, 0666);
     mkfifo(myfifo3, 0666);
     mkfifo(myfifo4, 0666);
+    mkfifo(myfifo5, 0666);*/
 
     /*conn = conexion_db();
     agregar_detalle_factura_servicio(conn);*/
         int opcion = 0;
+        char txt2[5];
         //conn = conexion_db();
-        do {
+        while(1) {
 
-            printf("\n|-----------------|");
-            printf("\n|    * Incio *    |");
-            printf("\n|-----------------|");
-            printf("\n| 1. Administrador|");
-            printf("\n| 2. Usuario      |");
-            printf("\n| 3. Salir        |");
-            printf("\n|-----------------|");
-            printf("\n\n Escoja una opcion: ");
-        scanf("%d", &opcion);
+            printf("\n|-----------------------------|");
+        printf("\n|            * Menu *         |");
+        printf("\n|-----------------------------|");
+        printf("\n| 1. Agregar    | 3. Leer     |");
+        printf("\n| 2. Actualizar | 4. Eliminar |");
+	printf("\n|	      5. Salir        |");
+        printf("\n|---------------|-------------|");
+            scanf("%i", &opcion);
+            
+            fdWR=open("servicios/menuInicio",O_WRONLY);
+            sprintf(txt2,"%i",opcion);
+            write(fdWR,txt2,sizeof(txt2));
+            printf("%s", txt2);
+            close(fdWR);
+            
 
         switch (opcion) {
 
-            case 1:
-                menu_admin();
-                break;
+		case 1:
+			menu_agregar();
+            printf("\n");
+			break;
+		case 2:
+            //menu_actualizar();
+            printf("\n");
+			break;
+		case 3:
+			menu_leer();
+			break;
+		case 4:
+			//menu_eliminar();
+            printf("\n");
+			break;
+        case 5:
+            main();
+        break;
+		default:
+			printf("\nOpcion no disponible\n");
 
+	}
 
         }
-
-        } while (opcion != 3);
     
     //
     //leer_todos(conn, "mostrar_clientes();");
@@ -124,7 +155,7 @@ int main() {
     return 0;
 }
 
-void menu_admin() {
+/*void menu_admin() {
     int opcion = 0; 
     do { 
 	printf("\n|-----------------------------|");
@@ -140,7 +171,7 @@ void menu_admin() {
 	switch (opcion) {
 
 		case 1:
-			//menu_agregar();
+			menu_agregar();
             printf("\n");
 			break;
 		case 2:
@@ -164,12 +195,14 @@ void menu_admin() {
 
     } while(opcion != 5);
 	    
-}
+}*/
 
-/*void menu_agregar() {
-
+void menu_agregar() {
+    Cliente * nuevo;  
+    char txt[5];  
     int opcion = 0; 
-    do {
+    char instruccion[100]=" ";
+    fdWR=open("servicios/menuAgregar",O_WRONLY);
 
         printf("\n|-----------------------------|");
         printf("\n|            * Menu *         |");
@@ -179,27 +212,38 @@ void menu_admin() {
         printf("\n|---------------|-------------|");
         printf("\n\n Escoja una opcion: ");
         scanf("%d", &opcion);
+        sprintf(txt,"%i",opcion);
+        printf(">>>>>>>%s\n",txt);
+        write(fdWR,txt,sizeof(txt));
+        close(fdWR);
 
         switch(opcion) {
             case 1:
-                agregar_cliente_servicio(conn);
+                nuevo  = recolectar_datos_cliente();
+                strcat(instruccion,agregar_todos("insertar_cliente", 6, nuevo->nombre, nuevo->apellido, nuevo->rfc, nuevo->direccion, nuevo->edad, nuevo->pais));
+                printf("\n%s\n", instruccion);
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //agregar_todos("insertar_cliente", 6, nuevo->nombre, nuevo->apellido, nuevo->rfc, nuevo->direccion, nuevo->edad, nuevo->pais);
+                //servidor_cliente(agregar_todos("insertar_cliente", 6, nuevo->nombre, nuevo->apellido, nuevo->rfc, nuevo->direccion, nuevo->edad, nuevo->pais));
+
             break;
             case 2:
-                agregar_articulo_servicio(conn);
+                //agregar_articulo_servicio(conn);
             break;
             case 3:
-                facturar_servicio(conn);
+                //facturar_servicio(conn);
             break;
             case 4:
-                menu_admin();
+                //menu_admin();
             break;
             default:
 			    printf("\nOpcion no disponible\n");
         }
 
-    } while (opcion != 6);
 
-}*/
+}
 
 void menu_leer() {
     vacia_buffer();
@@ -220,7 +264,7 @@ void menu_leer() {
         switch(opcion) {
             case 1:
                 //leer_todos(conn, "mostrar_clientes", 'f');
-                servidor_leer_cliente("mostrar_clientes"); 
+                servidor_cliente("mostrar_clientes"); 
                 break;
             case 2:
                 //leer_todos(conn, "mostrar_articulos", 'f');
@@ -244,62 +288,62 @@ void menu_leer() {
 
     } while (opcion != 4);
 
-    menu_admin();
+    //menu_admin();
 }
 
-void servidor_leer_cliente(char * sql) {
+void servidor_cliente(char * sql) {
     printf("    ---- CLIENTES ---\n");
-    fd = open(myfifo, O_WRONLY);
+    /*fd = open(myfifo, O_WRONLY);
     write(fd, sql, strlen(sql)+1);
     close(fd);
 
     fd = open(myfifo, O_RDONLY);
     read(fd, tabla, sizeof(tabla));
                 
-    close(fd);
+    close(fd);*/
     mostrar_tabla(tabla);
 
 }
 
 void servidor_leer_factura(char * sql) {
     printf("    ---- FACTURAS ---\n");
-    fd1 = open(myfifo2, O_WRONLY);
+    /*fd1 = open(myfifo2, O_WRONLY);
     write(fd1, sql, strlen(sql)+1);
     close(fd1);
 
     fd1 = open(myfifo2, O_RDONLY);
     read(fd1, tabla, sizeof(tabla));
                 
-    close(fd1);
+    close(fd1);*/
     mostrar_tabla(tabla);
     
 }
 
 void servidor_leer_articulo(char * sql) {
     printf("    ---- ARTICULOS ---\n");
-    fd2 = open(myfifo3, O_WRONLY);
+    /*fd2 = open(myfifo3, O_WRONLY);
     write(fd2, sql, strlen(sql)+1);
     close(fd2);
 
     fd2 = open(myfifo3, O_RDONLY);
     read(fd2, tabla, sizeof(tabla));
                 
-    close(fd2);
+    close(fd2);*/
     mostrar_tabla(tabla);
     
 }
 
 void servidor_leer_detalle_factura(char * sql) {
     printf("    ---- DETALLE FACTURAS ---\n");
-    fd3 = open(myfifo4, O_WRONLY);
+    /*fd3 = open(myfifo4, O_WRONLY);
     write(fd3, sql, strlen(sql)+1);
     close(fd3);
 
     fd3 = open(myfifo4, O_RDONLY);
     read(fd3, tabla, sizeof(tabla));
                 
-    close(fd3);
-    mostrar_tabla(tabla);
+    close(fd3);*/
+    //mostrar_tabla(tabla);
     
 }
 
@@ -321,6 +365,33 @@ void mostrar_tabla(char * tabla) {
 
 }
 
+Cliente * recolectar_datos_cliente(){
+
+    vacia_buffer();
+
+    printf("Digite su nombre: ");
+    char * nombre = nextLine();
+
+    printf("Digite su apellido: ");
+    char * apellido = nextLine();
+
+    printf("Digite su rfc: ");
+    char * rfc = nextLine();
+
+    printf("Digite su direccion: ");
+    char * direccion = nextLine();
+
+    printf("Digite su edad: ");
+    char * edad = nextLine();
+
+    printf("Digite su pais: ");
+    char * pais = nextLine();
+
+    return cliente_constructor (nombre, apellido, rfc, direccion,  edad, pais);
+}
+
+
+
 /*void menu_actualizar() {
     int opcion = 0;
     do {
@@ -339,10 +410,10 @@ void mostrar_tabla(char * tabla) {
                 menu_actualizar_cliente();
             break;
             case 2:
-                menu_actualizar_articulo();
+                //menu_actualizar_articulo();
             break;
             case 3:
-                menu_actualizar_factura();
+                //menu_actualizar_factura();
             break;
             case 4:
                 menu_admin();
@@ -354,9 +425,9 @@ void mostrar_tabla(char * tabla) {
     } while (opcion != 6);
 }*/
 
-
 /*void menu_actualizar_cliente() {
     int opcion = 0;
+    char * cadena;
     do {
 
         printf("\n|-----------------------------|");
@@ -372,7 +443,10 @@ void mostrar_tabla(char * tabla) {
 
         switch(opcion) {
             case 1:
-                actualizar_cliente_servicio(conn, "nombre");
+                printf("Digite su nombre: ");
+                cadena = nextLine();
+                servidor_cliente(actualizar_todos("actualizar", 1, cadena));
+                //actualizar_cliente_servicio(conn, "nombre");
             break;
             case 2:
                 actualizar_cliente_servicio(conn, "rfc");
@@ -397,7 +471,7 @@ void mostrar_tabla(char * tabla) {
         }
 
     } while (opcion != 6);
-}*/
+}/*
 
 /*void menu_actualizar_articulo() {
     int opcion = 0;

@@ -11,11 +11,13 @@
 //#include "../../include/eliminar.h"
 
 Cliente * recolectar_datos_cliente();
+void menu_agregar();
 //void agregar_cliente_servicio(PGconn *conn);
 //void actualizar_cliente_servicio(PGconn * conn, char * columna);
 //void eliminar_cliente_servicio(PGconn * conn);
 
 PGconn * conexion_db();
 void comprobar_estadodb();
+void do_exit_(PGconn *conn, PGresult * res);
 
 #endif

@@ -6,6 +6,6 @@
 #include <libpq-fe.h>
 #include <stdarg.h>
 
-void actualizar_todos(PGconn * conn, char * name_func_postgres, int cantidad, ...);
+void actualizar_todos(/*PGconn * conn, */char * name_func_postgres, int cantidad, ...);
 
 #endif

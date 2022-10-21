@@ -2,7 +2,8 @@
 #include "../../include/concat_punteros.h"
 
 
-void agregar_todos(PGconn * conn, char * name_func_postgres, int cantidad, ...) {
+//void agregar_todos(PGconn * conn, char * name_func_postgres, int cantidad, ...) {
+char * agregar_todos(/*PGconn * conn, */char * name_func_postgres, int cantidad, ...) {
 	va_list lista_argumentos;
 	va_start (lista_argumentos, cantidad);
 	char * p_concatenado = " ";
@@ -31,10 +32,10 @@ void agregar_todos(PGconn * conn, char * name_func_postgres, int cantidad, ...) 
 
 	va_end(lista_argumentos);
 
-	PGresult * res = PQexec(conn, sql);
+	//PGresult * res = PQexec(conn, sql);
 
 	printf("\n%s\n", sql);
-
+	return sql;
 }
 
 //SELECT actualizar ('nombre', 'javier', '1', 'clientes');
