@@ -4,7 +4,7 @@
 /* #include "../include/leer.h"*/
 #include "../include/agregar.h"
 #include "../include/cliente.h"
-//#include "../include/actualizar.h"
+#include "../include/actualizar.h"
 /*#include "../include/cliente_telefonos.h"
 #include "../include/articulo.h"
 #include "../include/factura.h"
@@ -33,11 +33,11 @@ void comprobar_estadodb();
 //void menu_admin();
 void menu_agregar();
 void menu_leer();
-/*void menu_actualizar();
+void menu_actualizar();
 void menu_actualizar_cliente();
 void menu_actualizar_articulo();
 void menu_actualizar_factura();
-void menu_eliminar();
+/*void menu_eliminar();
 void mostrar_datos_factura();*/
 
 void mostrar_tabla(char * tabla) ;
@@ -87,7 +87,7 @@ int main() {
         printf("\n|---------------|-------------|");
             scanf("%i", &opcion);
             
-            fdWR=open("servicios/menuInicio",O_WRONLY);
+            fdWR=open("servicios/menus",O_WRONLY);
             sprintf(txt2,"%i",opcion);
             write(fdWR,txt2,sizeof(txt2));
             printf("%s", txt2);
@@ -101,7 +101,7 @@ int main() {
             printf("\n");
 			break;
 		case 2:
-            //menu_actualizar();
+            menu_actualizar();
             printf("\n");
 			break;
 		case 3:
@@ -202,7 +202,7 @@ void menu_agregar() {
     char txt[5];  
     int opcion = 0; 
     char instruccion[100]=" ";
-    fdWR=open("servicios/menuAgregar",O_WRONLY);
+    fdWR=open("servicios/menus",O_WRONLY);
 
         printf("\n|-----------------------------|");
         printf("\n|            * Menu *         |");
@@ -221,7 +221,6 @@ void menu_agregar() {
             case 1:
                 nuevo  = recolectar_datos_cliente();
                 strcat(instruccion,agregar_todos("insertar_cliente", 6, nuevo->nombre, nuevo->apellido, nuevo->rfc, nuevo->direccion, nuevo->edad, nuevo->pais));
-                printf("\n%s\n", instruccion);
                 fdWR = open("servicios/consulta", O_WRONLY);
                 write(fdWR, instruccion, sizeof(instruccion));
                 close(fdWR);
@@ -392,8 +391,11 @@ Cliente * recolectar_datos_cliente(){
 
 
 
-/*void menu_actualizar() {
+void menu_actualizar() {
     int opcion = 0;
+    char txt[5];
+    char instruccion[100]=" ";
+    fdWR=open("servicios/menus",O_WRONLY);
     do {
 
         printf("\n|-----------------------------|");
@@ -404,30 +406,41 @@ Cliente * recolectar_datos_cliente(){
         printf("\n|---------------|-------------|");
         printf("\n\n Escoja una opcion: ");
         scanf("%d", &opcion);
+        sprintf(txt,"%i",opcion);
+        printf(">>>>>>>%s\n",txt);
+        write(fdWR,txt,sizeof(txt));
+        close(fdWR);
 
         switch(opcion) {
             case 1:
                 menu_actualizar_cliente();
             break;
             case 2:
-                //menu_actualizar_articulo();
+                menu_actualizar_articulo();
             break;
             case 3:
-                //menu_actualizar_factura();
+                menu_actualizar_factura();
             break;
             case 4:
-                menu_admin();
+                //menu_admin();
             break;
             default:
 			    printf("\nOpcion no disponible\n");
         }
 
     } while (opcion != 6);
-}*/
+}
 
-/*void menu_actualizar_cliente() {
+void menu_actualizar_cliente() {
     int opcion = 0;
-    char * cadena;
+    char txt[5];
+    char instruccion[100]=" ";
+    fdWR=open("servicios/menus",O_WRONLY);
+    char * nuevo = " ";
+    char * columna;
+    char * id = " ";
+    char * tabla = "clientes";
+    char * sql = "SELECT actualizar(";
     do {
 
         printf("\n|-----------------------------|");
@@ -440,41 +453,95 @@ Cliente * recolectar_datos_cliente(){
         printf("\n|---------------|-------------|");
         printf("\n\n Escoja una opcion: ");
         scanf("%d", &opcion);
-
+        sprintf(txt,"%i",opcion);
+        printf(">>>>>>>%s\n",txt);
+        write(fdWR,txt,sizeof(txt));
+        close(fdWR);
+        vacia_buffer();
+        printf("Digite el id cliente: ");
+        id = nextLine();
+        
         switch(opcion) {
             case 1:
+                columna="nombre";
                 printf("Digite su nombre: ");
-                cadena = nextLine();
-                servidor_cliente(actualizar_todos("actualizar", 1, cadena));
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //servidor_cliente(actualizar_todos("actualizar", 1, cadena));
                 //actualizar_cliente_servicio(conn, "nombre");
             break;
             case 2:
-                actualizar_cliente_servicio(conn, "rfc");
+                columna="rfc";
+                printf("Digite su rfc: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_cliente_servicio(conn, "rfc");
             break;
             case 3:
-                actualizar_cliente_servicio(conn, "edad");
+                columna="edad";
+                printf("Digite su edad: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_cliente_servicio(conn, "edad");
             break;
             case 4:
-                actualizar_cliente_servicio(conn, "apellidos");
+                columna="apellidos";
+                printf("Digite sus apellidos: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_cliente_servicio(conn, "apellidos");
             break;
             case 5:
-                actualizar_cliente_servicio(conn, "direccion");
+                columna="direccion";
+                printf("Digite su direccion: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_cliente_servicio(conn, "direccion");
             break;
             case 6:
-                actualizar_cliente_servicio(conn, "pais");
+                columna="pais";
+                printf("Digite su pais: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_cliente_servicio(conn, "pais");
             break;
             case 7:
-                menu_actualizar();
+                //menu_actualizar();
             break;
             default:
 			    printf("\nOpcion no disponible\n");
         }
 
     } while (opcion != 6);
-}/*
+}
 
-/*void menu_actualizar_articulo() {
+void menu_actualizar_articulo() {
     int opcion = 0;
+    char txt[5];
+    char instruccion[100]=" ";
+    char * nuevo = " ";
+    char * columna;
+    char * id = " ";
+    char * tabla = "articulos";
+    fdWR=open("servicios/menus",O_WRONLY);
     do {
 
         printf("\n|-----------------------------|");
@@ -486,36 +553,87 @@ Cliente * recolectar_datos_cliente(){
         printf("\n|---------------|-------------|");
         printf("\n\n Escoja una opcion: ");
         scanf("%d", &opcion);
+        sprintf(txt,"%i",opcion);
+        printf(">>>>>>>%s\n",txt);
+        write(fdWR,txt,sizeof(txt));
+        close(fdWR);
+        vacia_buffer();
+        printf("Digite el id cliente: ");
+        id = nextLine();
 
         switch(opcion) {
             case 1:
-                actualizar_articulo_servicio(conn, "descripcion");
+                columna="descripcion";
+                printf("Digite su descripcion: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_articulo_servicio(conn, "descripcion");
             break;
             case 2:
-                actualizar_articulo_servicio(conn, "cantidad");
+                columna="cantidad";
+                printf("Digite su cantidad: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_articulo_servicio(conn, "cantidad");
             break;
             case 3:
-                actualizar_articulo_servicio(conn, "fecha_ingreso");
+                columna="fecha_ingreso";
+                printf("Digite su fecha ingreso: [A-M-D]");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_articulo_servicio(conn, "fecha_ingreso");
             break;
             case 4:
-                actualizar_articulo_servicio(conn, "precio");
+                columna="precio";
+                printf("Digite su precio: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_articulo_servicio(conn, "precio");
             break;
             case 5:
-                actualizar_articulo_servicio(conn, "descuento");
+                columna="descuento";
+                printf("Digite su descuento: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_articulo_servicio(conn, "descuento");
             break;
             case 6:
-                menu_actualizar();
+                //menu_actualizar();
             break;
             default:
 			    printf("\nOpcion no disponible\n");
         }
 
     } while (opcion != 6);
-}*/
+}
 
-/*void menu_actualizar_factura() {
+void menu_actualizar_factura() {
     int opcion = 0;
+    char txt[5];
+    char instruccion[100]=" ";
+    char * nuevo = " ";
+    char * columna;
+    char * id = " ";
+    char * tabla = "facturas";
+    fdWR=open("servicios/menus",O_WRONLY);
     do {
+        for (int i = 0; i < 100; i++)
+                    instruccion[i] = '\0';
 
         printf("\n|------------------------------|");
         printf("\n|             * Menu *         |");
@@ -526,22 +644,58 @@ Cliente * recolectar_datos_cliente(){
         printf("\n|---------------|-------------|");
         printf("\n\n Escoja una opcion: ");
         scanf("%d", &opcion);
+        sprintf(txt,"%i",opcion);
+        printf(">>>>>>>%s\n",txt);
+        write(fdWR,txt,sizeof(txt));
+        close(fdWR);
+        vacia_buffer();
+        printf("Digite el id cliente: ");
+        id = nextLine();
+
 
         switch(opcion) {
             case 1:
-                actualizar_factura_servicio(conn, "fecha_fact");
+                columna="fecha_fact";
+                printf("Digite fehca de la factura: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_factura_servicio(conn, "fecha_fact");
             break;
             case 2:
-                actualizar_factura_servicio(conn, "importe_total");
+                columna="importe_total";
+                printf("Digite el importe total: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_factura_servicio(conn, "importe_total");
             break;
             case 3:
-                actualizar_factura_servicio(conn, "importe_letra");
+                columna="importe_letra";
+                printf("Digite el importe letra: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_factura_servicio(conn, "importe_letra");
             break;
             case 4:
-                actualizar_factura_servicio(conn, "id_cliente");
+                columna="id_cliente";
+                printf("Digite el id cliente: ");
+                nuevo = nextLine();
+                strcat(instruccion, actualizar_todos_("actualizar", 4, columna, nuevo, id, tabla));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                //actualizar_factura_servicio(conn, "id_cliente");
             break;
             case 5:
-                menu_actualizar();
+                //menu_actualizar();
             break;
             default:
 			        printf("\nOpcion no disponible\n");
@@ -549,7 +703,7 @@ Cliente * recolectar_datos_cliente(){
 
     } while (opcion != 6);
 }
-
+/*
 void menu_eliminar() {
    int opcion = 0;
     do {

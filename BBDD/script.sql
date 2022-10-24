@@ -587,7 +587,7 @@ $BODY$
 			ELSIF _columna = 'importe_letra' THEN
 				UPDATE facturas SET importe_letra = _nuevo WHERE folio = _id::INT;
 			ELSIF _columna = 'id_cliente' THEN
-				UPDATE facturas SET id_cliente = _nuevo::SMALLINT WHERE folio = _id::INT;
+				UPDATE facturas SET id_cliente = _nuevo::SMALLINT WHERE folio = _id::SMALLINT;
 			END IF;
 		ELSIF _tabla= 'detalle_facturas' THEN
 			IF _columna = 'folio' THEN

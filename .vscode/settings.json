@@ -22,6 +22,7 @@
         "types.h": "c",
         "unistd.h": "c",
         "stdlib.h": "c",
-        "lista.h": "c"
+        "lista.h": "c",
+        "actualizar.h": "c"
     }
 }

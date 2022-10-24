@@ -49,7 +49,6 @@ char * leer_todos_enviar(PGconn * conn, char * name_funcion_postgres, char tipo)
 		sql = cat_puntero(sql, ";");
 	//printf("%s\n", sql);
 	PGresult * res = PQexec(conn, sql);
-	vacia_buffer();
 
 	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
 		printf("No se han recuperado los datos\n");

@@ -23,13 +23,13 @@ int main()
 {
     conn = conexion_db();   
     mkfifo("consulta",0666);	
-    mkfifo("menuInicio",0666); 
+    mkfifo("menus",0666); 
     int opcion = 0;
    
     while (1)
     {
         
-        fdWR= open("menuInicio",O_RDONLY);
+        fdWR= open("menus",O_RDONLY);
         read(fdWR, txt, sizeof(txt));
         opcion = atoi(txt);
         close(fdWR);
@@ -51,7 +51,7 @@ int main()
             printf("\n");
             break;
         case 2:
-            // menu_actualizar();
+            menu_actualizar();
             printf("\n");
             break;
         case 3:
@@ -92,9 +92,9 @@ void menu_agregar() {
     int opcion = 0; 
     char instruccion[999] = " ";
     PGresult * res;
-    mkfifo("menuAgregar",0666);
-    fdRD=open("menuAgregar",O_RDONLY);
+    fdRD=open("menus",O_RDONLY);
     read(fdRD,txt,sizeof(txt));
+    close(fdRD);
 
         printf("\n|-----------------------------|");
         printf("\n|            * Menu *         |");
@@ -110,6 +110,7 @@ void menu_agregar() {
             fdRD=open("consulta",O_RDONLY);
             read(fdRD,instruccion,sizeof(instruccion));
             printf("Con: %s\n",instruccion);
+            close(fdRD);
             PQexec(conn,instruccion);
             break;
             case 2:
@@ -127,6 +128,211 @@ void menu_agregar() {
 
 
 }
+
+void menu_actualizar() {
+    int opcion = 0;
+    fdRD=open("menus",O_RDONLY);
+    read(fdRD,txt,sizeof(txt));
+    close(fdRD);
+    do {
+
+        printf("\n|-----------------------------|");
+        printf("\n|            * Menu *         |");
+        printf("\n|-----------------------------|");
+        printf("\n| 1. Cliente    | 3. Factura  |");
+        printf("\n| 2. Articulo   | 4. Salir    |");
+        printf("\n|---------------|-------------|");
+        printf("\n\n Escoja una opcion: ");
+        opcion=atoi(txt);
+        printf("------>%i\n",opcion);
+
+        switch(opcion) {
+            case 1:
+                menu_actualizar_cliente();
+            break;
+            case 2:
+                menu_actualizar_articulo();
+            break;
+            case 3:
+                menu_actualizar_factura();
+            break;
+            case 4:
+                //menu_admin();
+            break;
+            default:
+			    printf("\nOpcion no disponible\n");
+        }
+
+    } while (opcion != 6);
+}
+
+void menu_actualizar_cliente() {
+    int opcion = 0;
+    char txt[5];
+    char instruccion[100]=" ";
+    fdRD=open("menus",O_RDONLY);
+    read(fdRD,txt,sizeof(txt));
+    close(fdRD);
+    do {
+
+        printf("\n|-----------------------------|");
+        printf("\n|            * Menu *         |");
+        printf("\n|-----------------------------|");
+        printf("\n| 1. nombre     | 4. apellidos|");
+        printf("\n| 2. rfc        | 5. direccion|");
+        printf("\n| 3. edad       | 6. pais     |");
+        printf("\n|          7. regresar        |");
+        printf("\n|---------------|-------------|");
+        printf("\n\n Escoja una opcion: ");
+        opcion=atoi(txt);
+        printf("->%i\n",opcion);
+
+        fdRD=open("consulta",O_RDONLY);
+        read(fdRD,instruccion,sizeof(instruccion));
+        printf("Con: %s\n",instruccion);
+        close(fdRD);
+        switch(opcion) {
+            case 1:
+                PQexec(conn,instruccion);
+            break;
+            case 2:
+                PQexec(conn,instruccion);
+                //actualizar_cliente_servicio(conn, "rfc");
+            break;
+            case 3:
+                PQexec(conn,instruccion);
+                //actualizar_cliente_servicio(conn, "edad");
+            break;
+            case 4:
+                PQexec(conn,instruccion);
+                //actualizar_cliente_servicio(conn, "apellidos");
+            break;
+            case 5:
+                PQexec(conn,instruccion);
+                //actualizar_cliente_servicio(conn, "direccion");
+            break;
+            case 6:
+                PQexec(conn,instruccion);
+                //actualizar_cliente_servicio(conn, "pais");
+            break;
+            case 7:
+                //menu_actualizar();
+            break;
+            default:
+			    printf("\nOpcion no disponible\n");
+        }
+
+    } while (opcion != 6);
+}
+
+void menu_actualizar_articulo() {
+    int opcion = 0;
+    char txt[5];
+    char instruccion[100]=" ";
+    fdRD=open("menus",O_RDONLY);
+    read(fdRD,txt,sizeof(txt));
+    close(fdRD);
+    do {
+
+        printf("\n|-----------------------------|");
+        printf("\n|            * Menu *         |");
+        printf("\n|-----------------------------|");
+        printf("\n| 1. descripcion| 4. precio   |");
+        printf("\n| 2. cantidad   | 5. descuento|");
+        printf("\n| 3. F. Ingreso | 6. regresar |");
+        printf("\n|---------------|-------------|");
+        printf("\n\n Escoja una opcion: ");
+        opcion=atoi(txt);
+        printf("->%i\n",opcion);
+
+        fdRD=open("consulta",O_RDONLY);
+        read(fdRD,instruccion,sizeof(instruccion));
+        printf("Con: %s\n",instruccion);
+        close(fdRD);
+        switch(opcion) {
+            case 1:
+                PQexec(conn,instruccion);
+                //actualizar_articulo_servicio(conn, "descripcion");
+            break;
+            case 2:
+                PQexec(conn,instruccion);
+                //actualizar_articulo_servicio(conn, "cantidad");
+            break;
+            case 3:
+                PQexec(conn,instruccion);
+                //actualizar_articulo_servicio(conn, "fecha_ingreso");
+            break;
+            case 4:
+                PQexec(conn,instruccion);
+                //actualizar_articulo_servicio(conn, "precio");
+            break;
+            case 5:
+                PQexec(conn,instruccion);
+                //actualizar_articulo_servicio(conn, "descuento");
+            break;
+            case 6:
+                //menu_actualizar();
+            break;
+            default:
+			    printf("\nOpcion no disponible\n");
+        }
+
+    } while (opcion != 6);
+}
+
+void menu_actualizar_factura() {
+    int opcion = 0;
+    char txt[5];
+    char instruccion[100]=" ";
+    fdRD=open("menus",O_RDONLY);
+    read(fdRD,txt,sizeof(txt));
+    close(fdRD);
+    do {
+
+        printf("\n|------------------------------|");
+        printf("\n|             * Menu *         |");
+        printf("\n|------------------------------|");
+        printf("\n| 1. F. Factura | 3. Importe L.|");
+        printf("\n| 2. Importe T. | 4. Id Cliente|");
+        printf("\n|         5. regresar          |");
+        printf("\n|---------------|-------------|");
+        printf("\n\n Escoja una opcion: ");
+        opcion=atoi(txt);
+        printf("->%i\n",opcion);
+
+        fdRD=open("consulta",O_RDONLY);
+        
+        read(fdRD,instruccion,sizeof(instruccion));
+        printf("Con: %s\n",instruccion);
+        close(fdRD);
+
+        switch(opcion) {
+            case 1:
+                PQexec(conn,instruccion);
+                //actualizar_factura_servicio(conn, "fecha_fact");
+            break;
+            case 2:
+                PQexec(conn,instruccion);
+                //actualizar_factura_servicio(conn, "importe_total");
+            break;
+            case 3:
+                PQexec(conn,instruccion);
+                //actualizar_factura_servicio(conn, "importe_letra");
+            break;
+            case 4:
+                PQexec(conn,instruccion);
+                //actualizar_factura_servicio(conn, "id_cliente");
+            break;
+            case 5:
+                //menu_actualizar();
+            break;
+            default:
+			        printf("\nOpcion no disponible\n");
+        }
+
+    } while (opcion != 6);
+}
+
 
 /*Cliente * recolectar_datos_cliente(){
 

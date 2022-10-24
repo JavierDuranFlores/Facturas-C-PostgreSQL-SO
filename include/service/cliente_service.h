@@ -12,6 +12,10 @@
 
 Cliente * recolectar_datos_cliente();
 void menu_agregar();
+void menu_actualizar();
+void menu_actualizar_cliente();
+void menu_actualizar_articulo();
+void menu_actualizar_factura();
 //void agregar_cliente_servicio(PGconn *conn);
 //void actualizar_cliente_servicio(PGconn * conn, char * columna);
 //void eliminar_cliente_servicio(PGconn * conn);
