@@ -13,6 +13,8 @@
 Cliente * recolectar_datos_cliente();
 void menu_agregar();
 void menu_actualizar();
+void menu_leer();
+void menu_eliminar();
 void menu_actualizar_cliente();
 void menu_actualizar_articulo();
 void menu_actualizar_factura();

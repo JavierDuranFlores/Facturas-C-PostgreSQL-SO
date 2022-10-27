@@ -38,6 +38,7 @@ void leer_todos(PGconn * conn, char * name_funcion_postgres, char tipo) {
 
 char * leer_todos_enviar(PGconn * conn, char * name_funcion_postgres, char tipo) {
 	char * tabla = " ";
+	char * columna = " ";
 	char * sql = "SELECT * FROM ";
 	// SELECT * FROM mostrar_clientes
 	sql = cat_puntero(sql, name_funcion_postgres);
@@ -57,6 +58,9 @@ char * leer_todos_enviar(PGconn * conn, char * name_funcion_postgres, char tipo)
 	}
 	int rows = PQntuples(res);
 	int ncols = PQnfields(res);
+	for (int i=0; i<ncols; i++)
+        columna = cat_puntero(columna, PQfname(res, i));
+
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < ncols; j++) {
 			if ((j+1) == ncols)
@@ -77,3 +81,25 @@ char * leer_todos_enviar(PGconn * conn, char * name_funcion_postgres, char tipo)
 	//PQfinish(conn);	
 }
 
+char * leer_todos_columnas(PGconn * conn, char * name_funcion_postgres) {
+
+	char * columna = " ";
+	char * sql = "SELECT * FROM ";
+	// SELECT * FROM mostrar_clientes
+	sql = cat_puntero(sql, name_funcion_postgres);
+	sql = cat_puntero(sql, "();");
+	//printf("%s\n", sql);
+	PGresult * res = PQexec(conn, sql);
+
+	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+		printf("No se han recuperado los datos\n");
+		PQclear(res);
+		do_exit(conn);
+	}
+	int rows = PQntuples(res);
+	int ncols = PQnfields(res);
+	for (int i=0; i<ncols; i++)
+        columna = cat_punteros(columna, 2, PQfname(res, i), " ");
+
+	return columna;
+}

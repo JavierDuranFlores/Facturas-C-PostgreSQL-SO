@@ -4,7 +4,11 @@
 /* #include "../include/leer.h"*/
 #include "../include/agregar.h"
 #include "../include/cliente.h"
+#include "../include/articulo.h"
+#include "../include/factura.h"
+#include "../include/detalle_facturas.h"
 #include "../include/actualizar.h"
+#include "../include/eliminar.h"
 /*#include "../include/cliente_telefonos.h"
 #include "../include/articulo.h"
 #include "../include/factura.h"
@@ -37,8 +41,11 @@ void menu_actualizar();
 void menu_actualizar_cliente();
 void menu_actualizar_articulo();
 void menu_actualizar_factura();
-/*void menu_eliminar();
-void mostrar_datos_factura();*/
+
+
+void menu_eliminar();
+
+/*void mostrar_datos_factura();*/
 
 void mostrar_tabla(char * tabla) ;
 void servidor_cliente(char * sql) ;
@@ -46,7 +53,9 @@ void servidor_leer_factura(char * sql) ;
 void servidor_leer_articulo(char * sql);
 void servidor_leer_detalle_factura(char * sql);
 Cliente * recolectar_datos_cliente();
-
+Articulo * recolectar_datos_articulo();
+Detalle_Facturas * recolectar_datos_detalle_factura();
+Factura * recolectar_datos_factura();
 /*int fd, fd1, fd2, fd3, fd4;
 // FIFO file path
 char * myfifo = "/tmp/myfifo"; //cliente -> (CRUD)
@@ -106,9 +115,10 @@ int main() {
 			break;
 		case 3:
 			menu_leer();
+             printf("\n");
 			break;
 		case 4:
-			//menu_eliminar();
+			menu_eliminar();
             printf("\n");
 			break;
         case 5:
@@ -121,84 +131,44 @@ int main() {
 
         }
     
-    //
+    /*
     //leer_todos(conn, "mostrar_clientes();");
     /*printf("\n");
     leer_todos(conn, "mostrar_clientes();");
     leer_todos(conn, "mostrar_facturas();");
     leer_todos(conn, "mostrar_detalle_facturas();");
     leer_todos(conn, "mostrar_articulos();");
-	*/
+	
     // AGREGAR CLIENTES
     /*struct Cliente * cliente= cliente_constructor ("Vanessa", "Benavidez", "2edd", "San Jose",  "28", "Mexico");  
-/*
-    agregar_todos(conn, "insertar_cliente ", 6, cliente->nombre, cliente->apellido, cliente->rfc, cliente->direccion, cliente->edad, cliente->pais);*/
+
+    agregar_todos(conn, "insertar_cliente ", 6, cliente->nombre, cliente->apellido, cliente->rfc, cliente->direccion, cliente->edad, cliente->pais);
 
     // AGREGAR ARTICULOS
-   /*struct Articulo * articulo = articulo_constructor ("Papel", "6", "2022/02/02", "100", "10");
+   struct Articulo * articulo = articulo_constructor ("Papel", "6", "2022/02/02", "100", "10");
 
-   agregar_todos(conn, "insertar_articulos ", 5, articulo->descripcion, articulo->cantidad, articulo->fecha_ingreso, articulo->precio, articulo->descuento);*/
+   agregar_todos(conn, "insertar_articulos ", 5, articulo->descripcion, articulo->cantidad, articulo->fecha_ingreso, articulo->precio, articulo->descuento);
 
     // AGREGAR FACTURAS,
-    /*struct Factura * factura = factura_constructor ("2022/02/02", "1400", "MIL UN CUATROCIENTOS", "20");
-    agregar_todos (conn, "insertar_factura ", 4, factura->fecha_factura, factura->importe_total, factura->importe_letra, factura->id_cliente);*/
+    struct Factura * factura = factura_constructor ("2022/02/02", "1400", "MIL UN CUATROCIENTOS", "20");
+    agregar_todos (conn, "insertar_factura ", 4, factura->fecha_factura, factura->importe_total, factura->importe_letra, factura->id_cliente);
 
     // AGREGAR DETALLE FACTURAS
-    /*struct Detalle_Facturas * detalle_facturas = detalle_facturas_constructor ("1", "2", "5", "0");
-    agregar_todos(conn, "insertar_detalle_factura", 4, detalle_facturas->folio, detalle_facturas->id_articulo, detalle_facturas->cantidad, detalle_facturas->subtotal);*/
+    struct Detalle_Facturas * detalle_facturas = detalle_facturas_constructor ("1", "2", "5", "0");
+    agregar_todos(conn, "insertar_detalle_factura", 4, detalle_facturas->folio, detalle_facturas->id_articulo, detalle_facturas->cantidad, detalle_facturas->subtotal);
 
-    // AGREGAR CLIENTE TELEFONOS
-    /*struct Cliente_Telefonos * cliente_telefonos = cliente_telefonos_constructor("9626302716","20");
+     AGREGAR CLIENTE TELEFONOS
+    struct Cliente_Telefonos * cliente_telefonos = cliente_telefonos_constructor("9626302716","20");
 
-    agregar_todos(conn, "insertar_cliente_telefonos", 2, cliente_telefonos->telefono, cliente_telefonos->id_cliente);*/
-   
+    agregar_todos(conn, "insertar_cliente_telefonos", 2, cliente_telefonos->telefono, cliente_telefonos->id_cliente);
+    */
     return 0;
 }
 
-/*void menu_admin() {
-    int opcion = 0; 
-    do { 
-	printf("\n|-----------------------------|");
-        printf("\n|            * Menu *         |");
-        printf("\n|-----------------------------|");
-        printf("\n| 1. Agregar    | 3. Leer     |");
-        printf("\n| 2. Actualizar | 4. Eliminar |");
-	printf("\n|	      5. Salir        |");
-        printf("\n|---------------|-------------|");
-        printf("\n\n Escoja una opcion: ");
-        scanf("%d", &opcion);
-
-	switch (opcion) {
-
-		case 1:
-			menu_agregar();
-            printf("\n");
-			break;
-		case 2:
-            //menu_actualizar();
-            printf("\n");
-			break;
-		case 3:
-			menu_leer();
-			break;
-		case 4:
-			//menu_eliminar();
-            printf("\n");
-			break;
-        case 5:
-            main();
-        break;
-		default:
-			printf("\nOpcion no disponible\n");
-
-	}
-
-    } while(opcion != 5);
-	    
-}*/
-
 void menu_agregar() {
-    Cliente * nuevo;  
+    Cliente * nuevo;
+    Articulo* articulo;  
+    Factura * factura;
     char txt[5];  
     int opcion = 0; 
     char instruccion[100]=" ";
@@ -229,9 +199,20 @@ void menu_agregar() {
 
             break;
             case 2:
+                articulo  = recolectar_datos_articulo();
+                strcat(instruccion,agregar_todos("insertar_articulos", 5, articulo->descripcion, articulo->cantidad,  articulo->fecha_ingreso, articulo->precio, articulo->descuento));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+
                 //agregar_articulo_servicio(conn);
             break;
             case 3:
+                factura  = recolectar_datos_factura();
+                strcat(instruccion,agregar_todos("insertar_factura", 4, factura->fecha_factura, factura->importe_total, factura->importe_letra, factura->id_cliente));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
                 //facturar_servicio(conn);
             break;
             case 4:
@@ -248,7 +229,11 @@ void menu_leer() {
     vacia_buffer();
     char * sql = " ";
     int opcion = 0; 
-    do {
+    char txt[5];
+    char instruccion[10024]=" ";
+    char * tabla = " ";
+    char columna [100]=" ";
+    fdWR=open("servicios/menus",O_WRONLY);
 
         printf("\n|-----------------------------|");
         printf("\n|            * Menu *         |");
@@ -259,33 +244,88 @@ void menu_leer() {
         printf("\n|---------------|-------------|");
         printf("\n\n Escoja una opcion: ");
         scanf("%d", &opcion);
+        sprintf(txt,"%i",opcion);
+        printf(">>>>>>>%s\n",txt);
+        write(fdWR,txt,sizeof(txt));
+        close(fdWR);
+        printf("ddd\n");
 //writ al sever
         switch(opcion) {
             case 1:
+                /*fdWR = open("servicios/consulta", O_WRONLY);
+                sql = "mostrar_clientes";
+                write(fdWR, sql, sizeof(sql));
+                close(fdWR);*/
+
+                fdRD = open("servicios/consulta", O_RDONLY);
+                read(fdRD, columna, sizeof(columna));
+                //printf("sss%s", tabla);
+                close(fdRD);
+
+                printf("\n%s\n", columna);
+
+                fdRD = open("servicios/consulta", O_RDONLY);
+                read(fdRD, instruccion, sizeof(instruccion));
+                tabla = cat_puntero(tabla, instruccion);
+                //printf("sss%s", tabla);
+                close(fdRD);
+                mostrar_tabla(tabla);
                 //leer_todos(conn, "mostrar_clientes", 'f');
-                servidor_cliente("mostrar_clientes"); 
+                //servidor_cliente("mostrar_clientes");
                 break;
             case 2:
+
+                fdRD = open("servicios/consulta", O_RDONLY);
+                read(fdRD, columna, sizeof(columna));
+                //printf("sss%s", tabla);
+                close(fdRD);
+
+                printf("\n%s\n", columna);
+
+                fdRD = open("servicios/consulta", O_RDONLY);
+                read(fdRD, instruccion, sizeof(instruccion));
+                tabla = cat_puntero(tabla, instruccion);
+                //printf("sss%s", tabla);
+                close(fdRD);
+                mostrar_tabla(tabla);
                 //leer_todos(conn, "mostrar_articulos", 'f');
-                servidor_leer_articulo("mostrar_articulos");
+                //servidor_leer_articulo("mostrar_articulos");
                 printf("\n");
                 break;
             case 3:
-                //mostrar_datos_factura();
-                servidor_leer_factura("mostrar_facturashh");
-                //leer_todos(conn, "mostrar_facturas", 'f');
+                fdRD = open("servicios/consulta", O_RDONLY);
+                read(fdRD, columna, sizeof(columna));
+                close(fdRD);
+                printf("\n%s\n", columna);
+
+                fdRD = open("servicios/consulta", O_RDONLY);
+                read(fdRD, instruccion, sizeof(instruccion));
+                tabla = cat_puntero(tabla, instruccion);
+                close(fdRD);
+                mostrar_tabla(tabla);
                 printf("\n");
                 break;
             case 5:
+                fdRD = open("servicios/consulta", O_RDONLY);
+                read(fdRD, columna, sizeof(columna));
+                //printf("sss%s", tabla);
+                close(fdRD);
+                printf("\n%s\n", columna);
+
+                fdRD = open("servicios/consulta", O_RDONLY);
+                read(fdRD, instruccion, sizeof(instruccion));
+                tabla = cat_puntero(tabla, instruccion);
+                //printf("sss%s", tabla);
+                close(fdRD);
+                mostrar_tabla(tabla);
                 //leer_todos(conn, "mostrar_detalle_facturas", 'f');
-                servidor_leer_detalle_factura("mostrar_detalle_facturas");
+                //servidor_leer_detalle_factura("mostrar_detalle_facturas");
                 printf("\n");
                 break;
             default:
 			    printf("\nOpcion no disponible\n");
         }
 
-    } while (opcion != 4);
 
     //menu_admin();
 }
@@ -350,13 +390,13 @@ void mostrar_tabla(char * tabla) {
 
     //printf("%s\n", tabla);
 
-    char * fila = " ";
+    char * fila = "\n";
     fila = strtok(tabla, ";");
     if(fila != NULL){
         while(fila != NULL){
             // Sólo en la primera pasamos la cadena; en las siguientes pasamos NULL
             //printf("Token: %s\n", fila);
-            printf("%s\n", fila);
+            printf("\n%s\n", fila);
             fila = strtok(NULL, ";");
             
         }
@@ -389,14 +429,76 @@ Cliente * recolectar_datos_cliente(){
     return cliente_constructor (nombre, apellido, rfc, direccion,  edad, pais);
 }
 
+Articulo * recolectar_datos_articulo(){
 
+    vacia_buffer();
+
+    printf("Digite su descripcion: ");
+    char * descripcion = nextLine();
+
+    printf("Digite la cantidad del producto: " );
+	char * cantidad = nextLine();
+
+    printf("Digite su fecha de ingreso: ");
+	char * fecha_ingreso = nextLine();
+
+    printf("Digite el precio del articulo");
+	char * precio = nextLine();
+
+    printf("Digite el descuento del articulo: ");
+	char * descuento = nextLine();
+
+    return articulo_constructor (descripcion, cantidad, fecha_ingreso,  precio, descuento);
+
+}
+
+Detalle_Facturas * recolectar_datos_detalle_factura(){
+
+    //vacia_buffer();
+
+    printf("Digite su folio de Factura: ");
+    char * descripcion = nextLine();
+
+    printf("Digite el Id de articulo: " );
+	char * id_articulo = nextLine();
+
+    printf("Digite la cantidad: ");
+	char * cantidad = nextLine();
+
+    printf("Digite el subtotal");
+	char * subtotal = nextLine();
+
+    return detalle_facturas_constructor ("3", id_articulo, cantidad, subtotal);
+
+}
+
+Factura * recolectar_datos_factura(){
+
+    vacia_buffer();
+
+    printf("Digite su fecha factura: ");
+    char * fech_factura = nextLine();
+
+    printf("Digite su importe total: ");
+    char * importe_total = nextLine();
+
+    printf("Digite su importe letra: ");
+    char * importe_letra = nextLine();
+
+    printf("Digite su id cliente: ");
+    char * id_cliente = nextLine();
+
+    return factura_constructor (fech_factura, importe_total, importe_letra, id_cliente);
+}
 
 void menu_actualizar() {
     int opcion = 0;
     char txt[5];
     char instruccion[100]=" ";
     fdWR=open("servicios/menus",O_WRONLY);
-    do {
+
+        for (int i = 0; i < 100; i++)
+            instruccion[i] = '\0';
 
         printf("\n|-----------------------------|");
         printf("\n|            * Menu *         |");
@@ -428,7 +530,6 @@ void menu_actualizar() {
 			    printf("\nOpcion no disponible\n");
         }
 
-    } while (opcion != 6);
 }
 
 void menu_actualizar_cliente() {
@@ -442,6 +543,9 @@ void menu_actualizar_cliente() {
     char * tabla = "clientes";
     char * sql = "SELECT actualizar(";
     do {
+
+        for (int i = 0; i < 100; i++)
+            instruccion[i] = '\0';
 
         printf("\n|-----------------------------|");
         printf("\n|            * Menu *         |");
@@ -543,7 +647,8 @@ void menu_actualizar_articulo() {
     char * tabla = "articulos";
     fdWR=open("servicios/menus",O_WRONLY);
     do {
-
+        for (int i = 0; i < 100; i++)
+            instruccion[i] = '\0';
         printf("\n|-----------------------------|");
         printf("\n|            * Menu *         |");
         printf("\n|-----------------------------|");
@@ -633,7 +738,7 @@ void menu_actualizar_factura() {
     fdWR=open("servicios/menus",O_WRONLY);
     do {
         for (int i = 0; i < 100; i++)
-                    instruccion[i] = '\0';
+            instruccion[i] = '\0';
 
         printf("\n|------------------------------|");
         printf("\n|             * Menu *         |");
@@ -649,7 +754,7 @@ void menu_actualizar_factura() {
         write(fdWR,txt,sizeof(txt));
         close(fdWR);
         vacia_buffer();
-        printf("Digite el id cliente: ");
+        printf("Digite el folio de la factura: ");
         id = nextLine();
 
 
@@ -703,11 +808,17 @@ void menu_actualizar_factura() {
 
     } while (opcion != 6);
 }
-/*
-void menu_eliminar() {
-   int opcion = 0;
-    do {
 
+void menu_eliminar() {
+    int opcion = 0;
+    char txt[5];
+    char * id;
+    char instruccion[100]=" ";
+    char * idPun;
+    fdWR=open("servicios/menus",O_WRONLY);
+    do {
+        for (int i = 0; i < 100; i++)
+            instruccion[i] = '\0';
         printf("\n|-----------------------------|");
         printf("\n|            * Menu *         |");
         printf("\n|-----------------------------|");
@@ -717,21 +828,44 @@ void menu_eliminar() {
         printf("\n\n Escoja una opcion: ");
         scanf("%d", &opcion);
 
+        sprintf(txt,"%i",opcion);
+        printf(">>>>>>>%s\n",txt);
+        write(fdWR,txt,sizeof(txt));
+        close(fdWR);        
+        vacia_buffer();
         switch(opcion) {
             case 1:
-                eliminar_cliente_servicio(conn);
+                printf("Digite el id cliente: ");
+                id = nextLine();
+                strcat(instruccion, eliminar_todos("eliminar_cliente", 1, id));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
+                printf("\n");
             break;
             case 2:
-                eliminar_articulo_servicio(conn);
+                printf("Digite el id articulo: ");
+                id = nextLine();
+                strcat(instruccion, eliminar_todos("eliminar_articulo", 1, id));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
             break;
             case 3:
-                eliminar_factura_servicio(conn);
+                printf("Digite el id factura: ");
+                id = nextLine();
+                strcat(instruccion, eliminar_todos("eliminar_factura", 1, id));
+                fdWR = open("servicios/consulta", O_WRONLY);
+                write(fdWR, instruccion, sizeof(instruccion));
+                close(fdWR);
             break;
+            default:
+			    printf("\nOpcion no disponible\n");
         }
-    }while (opcion != 4);
-    menu_admin();
-}
+    } while (opcion != 4);
 
+}
+/*
 void mostrar_datos_factura() {
     int opcion = 0;
     do {

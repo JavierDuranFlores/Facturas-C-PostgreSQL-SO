@@ -9,6 +9,7 @@
 
 void leer_todos(PGconn * conn, char * name_funcion_postgres, char tipo);
 char * leer_todos_enviar(PGconn * conn, char * name_funcion_postgres, char tipo);
+char * leer_todos_columnas(PGconn * conn, char * name_funcion_postgres);
 void do_exit(PGconn *conn);
 
 #endif
